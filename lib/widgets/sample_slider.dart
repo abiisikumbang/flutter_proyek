@@ -11,6 +11,7 @@ class SampleSlider extends StatelessWidget {
       {'image': 'images/sample2.png', 'name': 'Kardus'},
       {'image': 'images/sample3.png', 'name': 'Kaleng'},
     ];
+//sizebox
 
     return SizedBox(
       height: 120,
