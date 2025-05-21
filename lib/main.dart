@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
       getPages: [
         // 🔧 Daftar semua route aplikasi di sini
         GetPage(name: '/login', page: () => LoginPage()), //
-        GetPage(name: '/main', page: () => MainPage()), //
+        GetPage(name: '/main', page: () => flutter_cbt_tpa_app()), //
       ],
     );
   }
