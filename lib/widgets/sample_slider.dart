@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mainpage/material.dart';
+import 'package:flutter_cbt_tpa_app/material.dart';
 
 class SampleSlider extends StatelessWidget {
   const SampleSlider({super.key});

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mainpage/material.dart';
-import 'package:mainpage/pages/main_page.dart';
-import 'package:mainpage/pages/transaksi_page.dart';
-import 'package:mainpage/pages/jual_sampah_page.dart';
-import 'package:mainpage/pages/bantuan_page.dart';
-import 'package:mainpage/pages/akun_page.dart';
+import 'package:flutter_cbt_tpa_app/material.dart';
+import 'package:flutter_cbt_tpa_app/pages/main_page.dart';
+import 'package:flutter_cbt_tpa_app/pages/transaksi_page.dart';
+import 'package:flutter_cbt_tpa_app/pages/jual_sampah_page.dart';
+import 'package:flutter_cbt_tpa_app/pages/bantuan_page.dart';
+import 'package:flutter_cbt_tpa_app/pages/akun_page.dart';
 
 class BottomNav extends StatefulWidget {
   const BottomNav({super.key});
@@ -18,7 +18,7 @@ class _BottomNavState extends State<BottomNav> {
 
   // List halaman berdasarkan indeks
   final List<Widget> _pages = const [
-    MainPage(),
+    flutter_cbt_tpa_app(),
     TransaksiPage(),
     JualSampahPage(),
     BantuanPage(),
