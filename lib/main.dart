@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_cbt_tpa_app/controller/authentication_controller.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // 🔧 Untuk menyimpan data lokal
 
@@ -7,6 +8,7 @@ import 'package:flutter_cbt_tpa_app/pages/login_page.dart';
 import 'package:flutter_cbt_tpa_app/pages/main_page.dart';
 
 void main() {
+  Get.put(AuthenticationController()); // 🔧 Inisialisasi controller
   runApp(const MyApp());
 }
 
@@ -28,11 +30,16 @@ class MyApp extends StatelessWidget {
       getPages: [
         // 🔧 Daftar semua route aplikasi di sini
         GetPage(name: '/login', page: () => LoginPage()), //
-        GetPage(name: '/main', page: () => flutter_cbt_tpa_app()), //
+        GetPage(name: '/main', page: () => FlutterCbtTpaApp()), //
       ],
     );
   }
-
+  /// Mengecek apakah pengguna sudah login atau belum.
+  ///
+  /// Jika ada token di SharedPreferences, maka akan dialihkan ke halaman utama.
+  /// Jika tidak, maka akan dialihkan ke halaman login.
+  ///
+  /// Fungsi ini digunakan untuk menentukan halaman awal aplikasi.
   Future<void> checkLoginStatus() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');

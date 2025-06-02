@@ -18,7 +18,7 @@ class _BottomNavState extends State<BottomNav> {
 
   // List halaman berdasarkan indeks
   final List<Widget> _pages = const [
-    flutter_cbt_tpa_app(),
+    FlutterCbtTpaApp(),
     TransaksiPage(),
     JualSampahPage(),
     BantuanPage(),

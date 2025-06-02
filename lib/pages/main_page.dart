@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_cbt_tpa_app/material.dart';
 import 'package:flutter_cbt_tpa_app/pages/home_content.dart';
 import 'package:flutter_cbt_tpa_app/pages/transaksi_page.dart';
 import 'package:flutter_cbt_tpa_app/pages/jual_sampah_page.dart';
 import 'package:flutter_cbt_tpa_app/pages/bantuan_page.dart';
 import 'package:flutter_cbt_tpa_app/pages/akun_page.dart';
-import 'package:flutter_cbt_tpa_app/widgets/main_menu.dart';
-import 'package:flutter_cbt_tpa_app/widgets/sample_slider.dart';
 
-class flutter_cbt_tpa_app extends StatefulWidget {
-  const flutter_cbt_tpa_app({super.key});
+
+class FlutterCbtTpaApp extends StatefulWidget {
+  const FlutterCbtTpaApp({super.key});
 
   @override
-  State<flutter_cbt_tpa_app> createState() => _flutter_cbt_tpa_appState();
+  State<FlutterCbtTpaApp> createState() => FlutterCbtTpaAppState();
 }
 
-class _flutter_cbt_tpa_appState extends State<flutter_cbt_tpa_app> {
+class FlutterCbtTpaAppState extends State<FlutterCbtTpaApp> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [

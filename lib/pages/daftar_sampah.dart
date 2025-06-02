@@ -5,18 +5,15 @@ import 'package:flutter_cbt_tpa_app/material.dart';
 class JualSampahPage extends StatelessWidget {
   const JualSampahPage({super.key});
 
-  /// Membuat tampilan halaman jual sampah.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        /// Warna background app bar.
         backgroundColor: AppColors.primary,
         title: const Text(
           "Jual Sampah",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        /// Warna teks app bar.
         foregroundColor: Colors.white,
       ),
       body: Padding(
@@ -45,11 +42,6 @@ class JualSampahPage extends StatelessWidget {
   }
 
   /// Membuat item untuk tiap-tiap jenis sampah.
-  ///
-  /// [context] adalah konteks widget yang sedang dibuat.
-  /// [img] adalah nama file gambar yang akan ditampilkan.
-  /// [title] adalah judul item yang akan ditampilkan.
-  /// [price] adalah harga item yang akan ditampilkan.
   Widget sampahItem(BuildContext context, String img, String title, String price) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -62,7 +54,8 @@ class JualSampahPage extends StatelessWidget {
         trailing: ElevatedButton(
           style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
           onPressed: () {
-            /// Menampilkan dialog konfirmasi ketika tombol jual diklik.
+            // Implementasi logika tombol jual
+            // Misalnya, tampilkan dialog konfirmasi
             showDialog(
               context: context,
               builder: (BuildContext context) {
@@ -79,7 +72,7 @@ class JualSampahPage extends StatelessWidget {
                     TextButton(
                       child: Text("Jual"),
                       onPressed: () {
-                        /// Logika untuk menjual item.
+                        // Logika untuk menjual item
                         Navigator.of(context).pop();
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('$title berhasil dijual!')),
@@ -97,4 +90,3 @@ class JualSampahPage extends StatelessWidget {
     );
   }
 }
-

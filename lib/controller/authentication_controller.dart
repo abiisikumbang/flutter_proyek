@@ -5,9 +5,65 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthenticationController extends GetxController {
   var isLoading = false.obs;
+  var name = ''.obs;
+  var email = ''.obs;
+  var phoneNumber = ''.obs;
 
   // Ganti dengan alamat server
-  final String baseUrl = 'http://192.168.239.6:8000';
+  final String baseUrl = 'http://192.168.121.6:8000';
+
+  @override
+  void onInit() {
+    super.onInit();
+    // Panggil getUser() saat controller diinisialisasi
+    // Ini akan memuat data pengguna jika ada sesi login yang tersimpan
+    getUser();
+  }
+
+  // Fungsi untuk mendapatkan token dari SharedPreferences
+  Future<String?> getToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token');
+  }
+
+  //Fungsi untuk mengambil user dari API
+  Future<void> getUser() async {
+    final token = await getToken();
+    if (token != null) {
+      try {
+        final response = await http.get(
+          Uri.parse('$baseUrl/api/user'),
+          headers: {'Authorization': 'Bearer $token'},
+        );
+        if (response.statusCode == 200) {
+          final data = jsonDecode(response.body);
+          name.value = data['name'] ?? ''; // Pastikan ada null check
+          email.value = data['email'] ?? '';
+          phoneNumber.value = data['phone'] ?? '';
+          // Jika ingin menyimpan data pengguna ke SharedPreferences
+        } else {
+          //jika token tidak valid atau sesi kadaluarsa, maka perlu logout otomatis
+          if (response.statusCode == 401) {
+            logout();
+            Get.snackbar("Session Expired", "Silakan login kembali");
+          } else {
+            Get.snackbar(
+              "Error",
+              "Gagal mengambil data pengguna ; ${response.statusCode}");
+          }
+        }
+      } catch (e) {
+        Get.snackbar("Error", "Tidak bisa konek ke server: $e");
+        name.value = '';
+        email.value = '';
+        phoneNumber.value = '';
+      }
+    } else {
+      name.value = '';
+      email.value = '';
+      phoneNumber.value = '';
+    }
+  }
 
   //login
   Future<bool> login({required String email, required String password}) async {
@@ -29,6 +85,11 @@ class AuthenticationController extends GetxController {
         await prefs.setString('user_email', user['email']);
         await prefs.setInt('user_id', user['id']);
 
+        //set variabel rx dengan data dari respons login
+        name.value = user['name']??'';
+        this.email.value = user['email']??'';
+        phoneNumber.value = user['phone']??'';
+
         // Navigasi ke halaman utama)
         Get.offAllNamed('/main');
         Get.snackbar("Login Berhasil", "Selamat datang ${user['name']}");
@@ -36,7 +97,7 @@ class AuthenticationController extends GetxController {
       } else {
         if (response.statusCode == 400 || response.statusCode == 401) {
           final error = jsonDecode(response.body);
-          Get.snackbar("Login Gagal", error['message'] ?? 'Terjadi kesalahan');
+          Get.snackbar("Login Gagal", error['message'] ?? 'Email atau password salah');
           return false;
         }
       }
@@ -77,19 +138,22 @@ class AuthenticationController extends GetxController {
         }),
       );
 
-      // print('Response: ${response.body}');
-      // print('Status code: ${response.statusCode}');
-
       // Check if the response status is 200 or 201 (success)
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
         final token = data['access_token'];
         final user = data['user'];
+
         // Save token and user data to SharedPreferences
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
         await prefs.setString('user_email', user['email']);
         await prefs.setInt('user_id', user['id']);
+
+  // SET VARIABEL RX DENGAN DATA DARI RESPONS REGISTER
+        this.name.value = user['name']??'';
+        this.email.value = user['email']??'';
+        this.phoneNumber.value = user['phone']??'';
 
         Get.offAllNamed('/login');
         Get.snackbar(
@@ -106,12 +170,40 @@ class AuthenticationController extends GetxController {
         );
       }
     } on Exception catch (e) {
-      // print("EXCEPTION: $e");
-      // Show error message if there's an exception
       Get.snackbar("Error", "Tidak dapat terhubung ke server: $e");
     } finally {
       // Reset loading state to false
       isLoading.value = false;
+    }
+  }
+
+  // Fungsi untuk logout
+  Future<void> logout() async {
+    isLoading.value = true;
+    try{
+      final token = await getToken();
+      if (token != null) {
+        await http.post(
+          Uri.parse('$baseUrl/api/logout'),
+          headers: {'Authorization': 'Bearer $token'},
+        );
+      }
+    } catch (e){
+      Get.log("Error during logout API call: $e"); // Log error, tapi tetap lanjutkan logout lokal
+    } finally {
+    // Menghapus token dari SharedPreferences
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+
+    //kosongkan semua variable rx
+    name.value = '';
+    email.value = '';
+    phoneNumber.value = '';
+
+    // Navigasi ke halaman login
+    Get.offAllNamed('/login');
+    Get.snackbar('Logout Berhasil', "Anda telah berhasil logout");
+    isLoading.value = false;
     }
   }
 }

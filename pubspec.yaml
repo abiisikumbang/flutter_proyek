@@ -39,6 +39,7 @@ dependencies:
   get: ^4.7.2
   google_fonts: ^6.2.1
   sqflite: ^2.4.2
+  google_maps_flutter: ^2.12.2
 
 dev_dependencies:
   flutter_test:
