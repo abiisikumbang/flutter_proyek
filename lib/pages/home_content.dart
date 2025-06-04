@@ -53,7 +53,7 @@ class _HomeContentState extends State<HomeContent> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: const [
                       Text("Saldo Anda", style: TextStyle(fontSize: 14)),
-                      Text("Rp 12.500", style: AppTextStyle.balance),
+                      Text("Rp 271.000.000.000.000", style: AppTextStyle.balance),
                     ],
                   ),
                 ),
