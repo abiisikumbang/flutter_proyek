@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controller/authentication_controller.dart';
-import '../material.dart'; // Pastikan path ini benar
+import '../material.dart';
 
 class AkunPage extends StatelessWidget {
   const AkunPage({super.key});
@@ -12,7 +12,6 @@ class AkunPage extends StatelessWidget {
     final AuthenticationController authenticationController =
         Get.find<AuthenticationController>();
 
-    // Menghapus baris ini karena getUser() dipanggil di onInit() controller
     // authenticationController.getUser();
 
     return Scaffold(

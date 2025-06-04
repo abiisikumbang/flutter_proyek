@@ -57,9 +57,11 @@ class MainMenu extends StatelessWidget {
               MaterialPageRoute(builder: (context) => const Center(child: Text('Sekolah Bebas Sampah'))),
               );
             } else if (item['label'] == 'Program\nLainnya') {
-              Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const Center(child: Text('Program Lainnya'))),
+              ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Program Lainnya akan segera hadir'),
+                duration: Duration(seconds: 2),
+              ),
               );
             }
             },

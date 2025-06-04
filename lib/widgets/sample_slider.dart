@@ -12,24 +12,27 @@ class SampleSlider extends StatelessWidget {
       {'image': 'images/sample1.png', 'name': 'Botol Plastik'},
       {'image': 'images/sample2.png', 'name': 'Kardus'},
       {'image': 'images/sample3.png', 'name': 'Kaleng'},
+      {'image': 'images/sample1.png', 'name': 'Botol Plastik'},
+      {'image': 'images/sample2.png', 'name': 'Kardus'},
+      {'image': 'images/sample3.png', 'name': 'Kaleng'},
     ];
 
     /// Ukuran tinggi dari slider
     return SizedBox(
-      height: 120,
+      height: 100,
       child: ListView.separated(
         /// Arah scrolling dari slider
         scrollDirection: Axis.horizontal,
         /// Jumlah item yang akan ditampilkan
-        itemCount: samples.length,
+        itemCount: samples.length ,
         /// Builder untuk membuat separator antar item
-        separatorBuilder: (_, __) => const SizedBox(width: 20),
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
         /// Builder untuk membuat item
         itemBuilder: (context, index) {
           return Container(
             /// Lebar dari setiap item
-            width: 100,
-            padding: const EdgeInsets.all(8),
+            width: 150,
+            padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
               /// Border dari setiap item
               border: Border.all(color: AppColors.cardBorder),
@@ -44,15 +47,15 @@ class SampleSlider extends StatelessWidget {
                 Expanded(
                   child: Image.asset(
                     samples[index]['image']!,
-                    fit: BoxFit.contain,
+                    fit: BoxFit.contain ,
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 6 * 0.8 ),
                 /// Nama dari setiap item
                 Text(
                   samples[index]['name']!,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 12),
+                  style: const TextStyle(fontSize: 15 * 0.8, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -62,4 +65,6 @@ class SampleSlider extends StatelessWidget {
     );
   }
 }
+
+
 
