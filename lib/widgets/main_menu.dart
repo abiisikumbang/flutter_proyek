@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cbt_tpa_app/pages/bantuan_page.dart';
 import '../pages/jual_sampah_page.dart';
 import '../pages/titik_poin_page.dart';
+import '../pages/sekolah_page.dart';
+
 
 class MainMenu extends StatelessWidget {
   const MainMenu({super.key});
@@ -17,7 +19,6 @@ class MainMenu extends StatelessWidget {
       {'icon': Icons.apps, 'label': 'Program\nLainnya'},
     ];
 
-    // Membungkus GridView dengan Padding dan Center untuk mengontrol lebar efektif
     return Center(
       child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -57,11 +58,9 @@ class MainMenu extends StatelessWidget {
               MaterialPageRoute(builder: (context) => const Center(child: Text('Sekolah Bebas Sampah'))),
               );
             } else if (item['label'] == 'Program\nLainnya') {
-              ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Program Lainnya akan segera hadir'),
-                duration: Duration(seconds: 2),
-              ),
+              Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const Center(child: Text('Program Lainnya'))),
               );
             }
             },
@@ -101,32 +100,5 @@ class MainMenu extends StatelessWidget {
       ),
       ),
     );
-
-    // return GridView.count(
-    //   physics: const NeverScrollableScrollPhysics(),
-    //   shrinkWrap: true,
-    //   crossAxisCount: 3,
-    //   crossAxisSpacing: 16,
-    //   mainAxisSpacing: 16,
-    //   children: menuItems.map((item) {
-    //     return Column(
-    //       mainAxisSize: MainAxisSize.min,
-    //       children: [
-    //         CircleAvatar(
-    //           // ignore: deprecated_member_use
-    //           backgroundColor: AppColors.primary.withOpacity(0.2),
-    //           radius: 28,
-    //           child: Icon(item['icon'], color: AppColors.primary, size: 28),
-    //         ),
-    //         const SizedBox(height: 6),
-    //         Text(
-    //           item['label'],
-    //           textAlign: TextAlign.center,
-    //           style: AppTextStyle.menuLabel,
-    //         )
-    //       ],
-    //     );
-    //   }).toList(),
-    // );
   }
 }

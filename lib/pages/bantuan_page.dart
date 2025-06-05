@@ -53,11 +53,82 @@ class BantuanPage extends StatelessWidget {
                 padding: const EdgeInsets.all(12), // jarak antara item
                 child: Text(faq["jawaban"]!), // jawaban item
               ),
-            ],
-          );
-        },
+              child: Column(
+                children: [
+                  Center(
+                    child: Image.asset(
+                      'lib/images/bantuan_image.png', // Ganti dengan path gambar bantuan Anda
+                      height: 150,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    "Butuh Bantuan?",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    "Temukan jawaban untuk pertanyaan yang sering diajukan di bawah ini.",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                "Pertanyaan yang Sering Diajukan:",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey[700],
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            ListView.separated(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: faqList.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 8),
+              itemBuilder: (context, index) {
+                final faq = faqList[index];
+                return Card(
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ExpansionTile(
+                    title: Text(
+                      faq["pertanyaan"]!,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    childrenPadding: const EdgeInsets.all(16.0),
+                    children: [
+                      Text(faq["jawaban"]!),
+                    ],
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }
+<<<<<<< HEAD
 }
 
+=======
+}
+>>>>>>> fc37a29171822200dac8def7e09633b7a1ca0a55
