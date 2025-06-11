@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cbt_tpa_app/pages/bantuan_page.dart';
 import '../pages/jual_sampah_page.dart';
 import '../pages/titik_poin_page.dart';
-import '../pages/sekolah_page.dart';
+import '../pages/sekolah_page.dart'; 
+import '../pages/daftar_sampah_page.dart';
+
+
 
 
 class MainMenu extends StatelessWidget {
@@ -11,7 +14,7 @@ class MainMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> menuItems = [
-      {'icon': Icons.recycling, 'label': 'Jual Sampah'},
+      {'icon': Icons.recycling, 'label': 'Daftar Sampah'},
       {'icon': Icons.location_on, 'label': 'Titik Poin'},
       {'icon': Icons.menu_book, 'label': 'Panduan'},
       {'icon': Icons.school, 'label': 'Sekolah\nBebas Sampah'},
@@ -36,10 +39,10 @@ class MainMenu extends StatelessWidget {
                 cursor: SystemMouseCursors.click,
                 child: GestureDetector(
                   onTap: () {
-                    if (item['label'] == 'Jual Sampah') {
+                    if (item['label'] == 'Daftar Sampah') {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => JualSampahPage()),
+                        MaterialPageRoute(builder: (context) => DaftarSampahPage()),
                       );
                     } else if (item['label'] == 'Titik Poin') {
                       Navigator.push(
