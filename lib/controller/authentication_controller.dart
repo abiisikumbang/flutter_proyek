@@ -10,7 +10,7 @@ class AuthenticationController extends GetxController {
   var phoneNumber = ''.obs;
 
   // Ganti dengan alamat server
-  final String baseUrl = 'http://192.168.18.41:8000';
+  final String baseUrl = 'http://192.168.123.6:8000';
 
   @override
   void onInit() {

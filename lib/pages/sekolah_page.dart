@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cbt_tpa_app/material.dart';
+import 'dart:developer';
 
 class SekolahPage extends StatefulWidget {
   const SekolahPage({super.key});
@@ -80,8 +81,8 @@ class _SekolahPageState extends State<SekolahPage> {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
-                      // TODO: Implementasi navigasi ke form pendaftaran sekolah
-                      print("Tombol Daftarkan Sekolahmu ditekan");
+                      // ignore: avoid_print
+                      log("Tombol Daftarkan Sekolahmu ditekan");
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,

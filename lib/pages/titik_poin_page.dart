@@ -10,7 +10,7 @@ class TitikPoinPage extends StatefulWidget {
 }
 
 class _TitikPoinPageState extends State<TitikPoinPage> {
-  final List<Map<String, String>> BgJakiPoints = [
+  final List<Map<String, String>> bgJakiPoints = [
     {
       'name': 'BangJaki Point Binjai',
       'address':
@@ -110,9 +110,9 @@ class _TitikPoinPageState extends State<TitikPoinPage> {
                   true, // Penting agar ListView bisa di dalam SingleChildScrollView
               physics:
                   const NeverScrollableScrollPhysics(), // Menonaktifkan scroll ListView
-              itemCount: BgJakiPoints.length,
+              itemCount: bgJakiPoints.length,
               itemBuilder: (context, index) {
-                final point = BgJakiPoints[index];
+                final point = bgJakiPoints[index];
                 return Card(
                   margin: const EdgeInsets.symmetric(
                     horizontal: 16.0,

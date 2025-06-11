@@ -6,7 +6,7 @@ class TransaksiPage extends StatefulWidget {
   const TransaksiPage({super.key});
 
   @override
-  _TransaksiPageState createState() => _TransaksiPageState();
+  TransaksiPageState createState() => TransaksiPageState();
 }
 
 // Daftar transaksi dummy
@@ -30,7 +30,7 @@ final List<Map<String, String>> dummyTransactions = const [
     'status': 'Dibatalkan',
   },
 ];
-class _TransaksiPageState extends State<TransaksiPage> {
+class TransaksiPageState extends State<TransaksiPage> {
   // State untuk filter yang dipilih
   String _selectedFilter = 'Semua';
 
