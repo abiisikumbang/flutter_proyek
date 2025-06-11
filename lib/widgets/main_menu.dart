@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cbt_tpa_app/pages/bantuan_page.dart';
-import '../pages/jual_sampah_page.dart';
+import '../pages/jual_sampah_page.dart'; // Tetap dipertahankan, mungkin nanti digunakan
 import '../pages/titik_poin_page.dart';
-import '../pages/sekolah_page.dart'; 
+import '../pages/sekolah_page.dart';
 import '../pages/daftar_sampah_page.dart';
-
-
 
 
 class MainMenu extends StatelessWidget {
@@ -18,8 +16,10 @@ class MainMenu extends StatelessWidget {
       {'icon': Icons.location_on, 'label': 'Titik Poin'},
       {'icon': Icons.menu_book, 'label': 'Panduan'},
       {'icon': Icons.school, 'label': 'Sekolah\nBebas Sampah'},
-      // {'icon': Icons.event, 'label': 'Bisnis &\nEvent'},
+      // {'icon': Icons.event, 'label': 'Bisnis &\nEvent'}, // Dicomment out seperti versi Anda
       {'icon': Icons.apps, 'label': 'Program\nLainnya'},
+      // Jika 'Jual Sampah' ingin ditambahkan, uncomment baris ini:
+      // {'icon': Icons.attach_money, 'label': 'Jual Sampah'},
     ];
 
     return Center(
@@ -59,7 +59,15 @@ class MainMenu extends StatelessWidget {
                         context,
                         MaterialPageRoute(builder: (context) => SekolahPage()),
                       );
-                    } else if (item['label'] == 'Program\nLainnya') {
+                    }
+                    // Jika Jual Sampah ingin ditambahkan, tambahkan logika ini:
+                    // else if (item['label'] == 'Jual Sampah') {
+                    //   Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(builder: (context) => JualSampahPage()),
+                    //   );
+                    // }
+                    else if (item['label'] == 'Program\nLainnya') {
                       // Menampilkan notifikasi di tengah layar
                       showDialog(
                         context: context,

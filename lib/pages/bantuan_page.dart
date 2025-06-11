@@ -1,64 +1,57 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cbt_tpa_app/material.dart';
 
-class BantuanPage extends StatefulWidget {
+// Halaman bantuan untuk pengguna
+class BantuanPage extends StatelessWidget {
   const BantuanPage({super.key});
 
   @override
-  State<BantuanPage> createState() => _BantuanPageState();
-}
-
-class _BantuanPageState extends State<BantuanPage> {
-  final List<Map<String, String>> faqList = [
-    {
-      "pertanyaan": "Bagaimana cara menjual sampah?",
-      "jawaban":
-          "Masuk ke menu 'Jual Sampah', pilih jenis sampah, dan ikuti langkah-langkah pengiriman.",
-    },
-    {
-      "pertanyaan": "Apa itu titik poin?",
-      "jawaban":
-          "Titik poin adalah lokasi drop-off atau pengambilan sampah yang bekerja sama dengan BangJAKI.",
-    },
-    {
-      "pertanyaan": "Bagaimana jika transaksi gagal?",
-      "jawaban":
-          "Silakan hubungi CS melalui fitur bantuan atau kirim email ke cs@bangjaki.id",
-    },
-    {
-      "pertanyaan": "Jenis sampah apa saja yang diterima?",
-      "jawaban": "Kami menerima berbagai jenis sampah daur ulang seperti kertas, plastik, dan logam.",
-    },
-    {
-      "pertanyaan": "Apakah ada biaya untuk menggunakan aplikasi ini?",
-      "jawaban": "Tidak, aplikasi BangJAKI dapat digunakan secara gratis.",
-    },
-  ];
-
-  @override
   Widget build(BuildContext context) {
+    // Daftar FAQ yang akan ditampilkan
+    final List<Map<String, String>> faqList = [
+      {
+        "pertanyaan": "Bagaimana cara menjual sampah?", // pertanyaan 1
+        "jawaban":
+            "Masuk ke menu 'Jual Sampah', pilih jenis sampah, dan ikuti langkah-langkah pengiriman.", // jawaban 1
+      },
+      {
+        "pertanyaan": "Apa itu titik poin?", // pertanyaan 2
+        "jawaban":
+            "Titik poin adalah lokasi drop-off atau pengambilan sampah yang bekerja sama dengan BangJAKI.", // jawaban 2
+      },
+      {
+        "pertanyaan": "Bagaimana jika transaksi gagal?", // pertanyaan 3
+        "jawaban":
+            "Silakan hubungi CS melalui fitur bantuan atau kirim email ke cs@bangjaki.id", // jawaban 3
+      },
+    ];
+
+    // Struktur halaman bantuan
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Bantuan",
-          style: TextStyle(fontWeight: FontWeight.bold),
+          "Bantuan", // judul halaman
+          style: TextStyle(fontWeight: FontWeight.bold), // gaya teks judul
         ),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-        elevation: 0,
+        backgroundColor: AppColors.primary, // warna background app bar
+        foregroundColor: Colors.white, // warna teks app bar
+        elevation: 0, // tinggi app bar
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(20.0),
-              decoration: BoxDecoration(
-                color: AppColors.primary,
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(30),
-                  bottomRight: Radius.circular(30),
-                ),
+      body: ListView.separated(
+        padding: const EdgeInsets.all(16), // jarak antara item
+        itemCount: faqList.length, // jumlah item
+        separatorBuilder: (_, __) => const SizedBox(height: 12), // jarak antara item
+        itemBuilder: (context, index) {
+          final faq = faqList[index]; // ambil item ke-i
+          return ExpansionTile(
+            title: Text(
+              faq["pertanyaan"]!, // judul item
+              style: const TextStyle(fontWeight: FontWeight.bold), // gaya teks judul
+            ),
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(12), // jarak antara item
+                child: Text(faq["jawaban"]!), // jawaban item
               ),
               child: Column(
                 children: [
@@ -133,4 +126,9 @@ class _BantuanPageState extends State<BantuanPage> {
       ),
     );
   }
+<<<<<<< HEAD
 }
+
+=======
+}
+>>>>>>> fc37a29171822200dac8def7e09633b7a1ca0a55
