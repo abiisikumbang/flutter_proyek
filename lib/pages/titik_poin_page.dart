@@ -147,7 +147,7 @@ class _TitikPoinPageState extends State<TitikPoinPage> {
                       color: Colors.grey,
                     ),
                     onTap: () {
-                      // TODO: Implementasi navigasi ke detail lokasi atau peta
+                      //  Implementasi navigasi ke detail lokasi atau peta
                       // Contoh: Jika ingin menampilkan peta lokasi tertentu saat diklik
                       // Get.to(() => MapDetailPage(point: point));
                     },

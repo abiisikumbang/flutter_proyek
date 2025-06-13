@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cbt_tpa_app/pages/bantuan_page.dart';
-import '../pages/jual_sampah_page.dart'; // Tetap dipertahankan, mungkin nanti digunakan
 import '../pages/titik_poin_page.dart';
+import '../pages/daftar_sampah_page.dart';
+import '../pages/sekolah_page.dart';
 
 
 

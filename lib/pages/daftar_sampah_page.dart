@@ -1,9 +1,13 @@
 // lib/pages/daftar_sampah_page.dart
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_cbt_tpa_app/material.dart';
-import 'package:flutter_cbt_tpa_app/models/sampah_item.dart'; // Import SampahItemModel
-import 'package:flutter_cbt_tpa_app/pages/jual_sampah_page.dart'; // Import JualSampahPage
+import 'package:flutter_cbt_tpa_app/models/sampah_item.dart';
+import 'package:flutter_cbt_tpa_app/pages/jual_sampah_page.dart';
+import 'package:http/http.dart' as http show get;
+import 'package:logger/logger.dart';
 
 /// Halaman untuk menampilkan daftar jenis sampah yang tersedia untuk dijual.
 class DaftarSampahPage extends StatefulWidget {
@@ -14,24 +18,67 @@ class DaftarSampahPage extends StatefulWidget {
   @override
   State<DaftarSampahPage> createState() => _DaftarSampahPageState();
 }
-
 class _DaftarSampahPageState extends State<DaftarSampahPage> {
-  final List<SampahItemModel> _availableSampah = [
-    SampahItemModel(img: 'images/plastik.png', title: 'Plastik', price: 'Rp 1.500/kg'),
-    SampahItemModel(img: 'images/kertas.png', title: 'Kertas', price: 'Rp 1.000/kg'),
-    SampahItemModel(img: 'images/logam.png', title: 'Logam', price: 'Rp 3.500/kg'),
-  ];
-
+  final logger = Logger();
+  List<SampahItemModel> _availableSampah = [];
   List<SampahItemModel> _cartItems = [];
+  bool _isLoading = true;
+  String _errorMessage = '';
+
+  final String baseUrl = "http://192.168.123.6:8000";
 
   @override
   void initState() {
     super.initState();
-    if (widget.initialCartItems != null) {
-      _cartItems = List.from(widget.initialCartItems!);
+    _cartItems = List.from(widget.initialCartItems ?? []);
+    _fetchAvailableSampah();
+  }
+  Future<void> _fetchAvailableSampah() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+    });
+  
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/api/wastes'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Accept': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+        if (responseData['status'] == 'success' && responseData['data'] != null) {
+          List<SampahItemModel> fetchedItems = (responseData['data'] as List)
+              .map((itemJson) => SampahItemModel.fromJson(itemJson))
+              .toList();
+
+          setState(() {
+            _availableSampah = fetchedItems;
+            _isLoading = false;
+          });
+        } else {
+          setState(() {
+            _errorMessage = responseData['message'] ?? 'gagal memuat data';
+            _isLoading = false;
+          });
+        }
+      } else {
+         setState(() {
+          _errorMessage = 'Gagal memuat data sampah. Status: ${response.statusCode}';
+          _isLoading = false;
+        });
+        logger.e('API Error: ${response.statusCode} - ${response.body}');
+      }
+    }  catch (e) {
+      setState(() {
+        _errorMessage = 'Terjadi kesalahan jaringan: $e';
+        _isLoading = false;
+      });
+      logger.e('Network Error: $e');
     }
   }
-
   void _addToCart(SampahItemModel item) {
     setState(() {
       final existingItemIndex = _cartItems.indexWhere((cartItem) => cartItem.title == item.title);
@@ -42,8 +89,8 @@ class _DaftarSampahPageState extends State<DaftarSampahPage> {
         _cartItems.add(SampahItemModel(
           img: item.img,
           title: item.title,
-          price: item.price,
-          quantity: 1,
+          satuan: item.satuan,
+          quantity: 1, id: '1', points: item.points
         ));
       }
       ScaffoldMessenger.of(context).showSnackBar(
@@ -56,11 +103,13 @@ class _DaftarSampahPageState extends State<DaftarSampahPage> {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
+        // Membuat state yang dapat diubah dalam bottom sheet
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter modalSetState) {
             double totalHarga = 0.0;
+            // Menghitung total harga dari semua item di keranjang
             for (var item in _cartItems) {
-              totalHarga += item.pricePerKg * item.quantity;
+              totalHarga += item.points * item.quantity;
             }
 
             return Container(
@@ -89,7 +138,7 @@ class _DaftarSampahPageState extends State<DaftarSampahPage> {
                           return ListTile(
                             leading: Image.asset(item.img, width: 40),
                             title: Text(item.title),
-                            subtitle: Text('Harga: ${item.price} | Jumlah: ${item.quantity}'),
+                            subtitle: Text('Harga: ${item.points} | Jumlah: ${item.quantity}'),
                             trailing: IconButton(
                               icon: const Icon(Icons.remove_circle, color: Colors.red),
                               onPressed: () {
@@ -112,12 +161,12 @@ class _DaftarSampahPageState extends State<DaftarSampahPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text(
-                        "Total Harga:",
+                        "Total Point:",
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        "Rp${totalHarga.toStringAsFixed(0)}",
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary),
+                        totalHarga.toStringAsFixed(0),
+                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary),
                       ),
                     ],
                   ),
@@ -126,15 +175,21 @@ class _DaftarSampahPageState extends State<DaftarSampahPage> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: _cartItems.isEmpty
-                          ? null
-                          : () {
-                              Navigator.pop(context, _cartItems);
-                            },
+                        ? null
+                        : () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => JualSampahPage(cartItems: _cartItems),
+                          ),
+                          );
+                        },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       ),
                       child: const Text("Lanjutkan", style: TextStyle(fontSize: 16)),
                     ),
@@ -167,25 +222,35 @@ class _DaftarSampahPageState extends State<DaftarSampahPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Pilih Jenis Sampah",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: ListView.builder(
-                itemCount: _availableSampah.length,
-                itemBuilder: (context, index) {
-                  final item = _availableSampah[index];
-                  return _sampahItem(context, item);
-                },
-              ),
-            ),
-          ],
-        ),
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : _errorMessage.isNotEmpty
+                ? Center(
+                    child: Text(
+                      _errorMessage,
+                      style: const TextStyle(color: Colors.red, fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Pilih Jenis Sampah",
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 16),
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: _availableSampah.length,
+                          itemBuilder: (context, index) {
+                            final item = _availableSampah[index];
+                            return _sampahItem(context, item);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
       ),
       floatingActionButton: _cartItems.isNotEmpty
           ? FloatingActionButton.extended(
@@ -207,7 +272,7 @@ class _DaftarSampahPageState extends State<DaftarSampahPage> {
         contentPadding: const EdgeInsets.all(12),
         leading: Image.asset(item.img, width: 48),
         title: Text(item.title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(item.price),
+        subtitle: Text(item.satuan),
         trailing: ElevatedButton(
           style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
           onPressed: () {
