@@ -47,15 +47,31 @@ class _HomeContentState extends State<HomeContent> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(12),
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
-                      Text("Saldo Anda", style: TextStyle(fontSize: 14)),
-                      Text("Rp 271.000.000.000.000", style: AppTextStyle.balance),
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text("Point Anda", style: TextStyle(fontSize: 14)),
+                    Row(
+                    children: [
+                      Obx(
+                      () => Text(
+                        "${authenticationController.totalPoints.value} Point",
+                        style: AppTextStyle.balance,
+                      ),
+                      ),
+                      IconButton(
+                      icon: const Icon(Icons.refresh, size: 20),
+                      tooltip: 'Refresh Point',
+                      onPressed: () async {
+                        await authenticationController.getUser();
+                      },
+                      ),
                     ],
+                    ),
+                  ],
                   ),
                 ),
               ],

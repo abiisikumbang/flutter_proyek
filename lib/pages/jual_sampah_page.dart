@@ -141,13 +141,11 @@ class _JualSampahPageState extends State<JualSampahPage> { // State dari JualSam
       // Ambil token dari SharedPreferences setelah login
       final prefs = await SharedPreferences.getInstance();
       final String? token = prefs.getString('token');
-      if (!mounted || token == null || token.isEmpty) {
-        if (mounted) {
-          Navigator.of(context).pop();
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Token autentikasi tidak ditemukan. Silakan login ulang.')),
-          );
-        }
+      if (token == null || token.isEmpty) {
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Token autentikasi tidak ditemukan. Silakan login ulang.')),
+        );
         return;
       }
 

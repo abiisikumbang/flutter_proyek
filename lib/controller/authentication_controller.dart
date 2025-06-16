@@ -8,6 +8,7 @@ class AuthenticationController extends GetxController {
   var name = ''.obs;
   var email = ''.obs;
   var phoneNumber = ''.obs;
+  RxInt totalPoints = 0.obs;
 
   // Ganti dengan alamat server
   final String baseUrl = 'http://192.168.123.6:8000';
@@ -40,6 +41,7 @@ class AuthenticationController extends GetxController {
           name.value = data['name'] ?? ''; // Pastikan ada null check
           email.value = data['email'] ?? '';
           phoneNumber.value = data['phone'] ?? '';
+          totalPoints.value = data['total_points'];
           // Jika ingin menyimpan data pengguna ke SharedPreferences
         } else {
           //jika token tidak valid atau sesi kadaluarsa, maka perlu logout otomatis
