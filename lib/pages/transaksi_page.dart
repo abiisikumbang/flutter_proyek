@@ -4,12 +4,10 @@ import 'package:http/http.dart' as http; // Untuk HTTP request
 import 'dart:convert'; // Untuk JSON decoding
 import 'package:shared_preferences/shared_preferences.dart'; // Untuk token
 import 'package:intl/intl.dart'; // Untuk formatting tanggal
-
 // Import model yang baru dibuat
 import 'package:flutter_cbt_tpa_app/models/sell_transaction_model.dart';
-//import 'package:flutter_cbt_tpa_app/models/sell_transaction_item_model.dart'; // Jika dibutuhkan secara langsung
+import 'package:flutter_cbt_tpa_app/pages/transaksi_detail_page.dart';
 
-// Halaman untuk menampilkan daftar transaksi
 class TransaksiPage extends StatefulWidget {
   const TransaksiPage({super.key});
 
@@ -17,49 +15,62 @@ class TransaksiPage extends StatefulWidget {
   TransaksiPageState createState() => TransaksiPageState();
 }
 
-class TransaksiPageState extends State<TransaksiPage> with WidgetsBindingObserver {
-  List<SellTransactionModel> _allTransactions = []; // Menyimpan semua data dari API
-  List<SellTransactionModel> _filteredTransactions = []; // Data yang ditampilkan setelah filter/search
-  
+class TransaksiPageState extends State<TransaksiPage>
+    with WidgetsBindingObserver {
+  List<SellTransactionModel> _allTransactions = [];
+  List<SellTransactionModel> _filteredTransactions = [];
+
+  // Flag untuk mengetahui apakah sedang dalam proses loading transaksi
   bool _isLoading = true;
+
+  // Pesan error yang akan ditampilkan jika terjadi kesalahan
   String? _errorMessage;
+
+  // Filter yang sedang dipilih user
   String _selectedFilter = 'Semua';
+
+  // Text controller untuk input pencarian
   final TextEditingController _searchController = TextEditingController();
 
-  final String baseUrl = "http://192.168.123.6:8000";
+  // Base URL API
+  final String baseUrl = "http://192.168.145.6:8000";
 
+  // Lifecycle method untuk mengetahui kapan aplikasi berpindah
+  // dari foreground ke background dan sebaliknya
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this); // Tambahkan observer untuk memantau siklus hidup widget
+    WidgetsBinding.instance.addObserver(this);
     _searchController.addListener(_onSearchChanged);
-    _fetchTransactions(); // Panggil saat halaman pertama kali dimuat
+    _fetchTransactions();
   }
 
+  // Lifecycle method untuk menghapus observer dan text controller
+  // ketika page ini dihapus
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this); // Hapus observer
+    WidgetsBinding.instance.removeObserver(this);
     _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
     super.dispose();
   }
 
-  // Digunakan untuk BottomNavigationBar agar data refresh saat tab diaktifkan
+  // Lifecycle method untuk mengetahui kapan aplikasi berpindah
+  // dari foreground ke background dan sebaliknya
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      // Aplikasi kembali dari background atau tab Transaksi diaktifkan
       _fetchTransactions();
     }
   }
 
-  // Fungsi untuk mendapatkan token dari SharedPreferences
+  // Fungsi untuk mengambil token dari SharedPreferences
   Future<String?> _getToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('token');
   }
 
-  // Fungsi untuk mengambil data transaksi dari API
+  // Fungsi untuk mengambil daftar transaksi dari API
   Future<void> _fetchTransactions() async {
     setState(() {
       _isLoading = true;
@@ -77,8 +88,9 @@ class TransaksiPageState extends State<TransaksiPage> with WidgetsBindingObserve
     }
 
     try {
+      // Melakukan request GET ke API untuk mengambil daftar transaksi
       final response = await http.get(
-        Uri.parse('$baseUrl/api/sell/history'), // Endpoint /api/sell
+        Uri.parse('$baseUrl/api/sell/history'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer $token',
@@ -88,59 +100,75 @@ class TransaksiPageState extends State<TransaksiPage> with WidgetsBindingObserve
       if (!mounted) return;
 
       if (response.statusCode == 200) {
+        // Meng-decode JSON response menjadi List<SellTransactionModel>
         final Map<String, dynamic> responseData = json.decode(response.body);
-        // Respon API Anda tidak memiliki key 'data' di level atas,
-        // jadi kita asumsikan responsnya langsung array transaksi
-        // Jika API Anda membungkus dalam 'data': final List<dynamic> transactionListJson = responseData['data'];
-        final List<dynamic> transactionListJson = responseData['data']; // Sesuaikan jika API Anda tidak punya 'data'
+        final List<dynamic> transactionListJson = responseData['data'];
 
         setState(() {
-          _allTransactions = transactionListJson
-              .map((json) => SellTransactionModel.fromJson(json as Map<String, dynamic>))
-              .toList();
-          _filterTransactions(); // Terapkan filter dan search setelah data dimuat
+          _allTransactions =
+              transactionListJson
+                  .map(
+                    (json) => SellTransactionModel.fromJson(
+                      json as Map<String, dynamic>,
+                    ),
+                  )
+                  .toList();
+          _filterTransactions();
           _isLoading = false;
         });
       } else {
         setState(() {
           _isLoading = false;
-          _errorMessage = 'Gagal memuat transaksi: ${response.statusCode} - ${response.body}';
+          _errorMessage =
+              'Gagal memuat transaksi: ${response.statusCode} - ${response.body}';
         });
-        print('Failed to load transactions: ${response.statusCode} - ${response.body}');
+        // Use logging framework instead of print
+        // ignore: avoid_print
+        debugPrint(
+          'Failed to load transactions: ${response.statusCode} - ${response.body}',
+        );
       }
     } catch (e) {
       setState(() {
-        _isLoading = false;
-        _errorMessage = 'Terjadi kesalahan jaringan: $e';
+      _isLoading = false;
+      _errorMessage = 'Terjadi kesalahan jaringan: $e';
       });
-      print('Network error fetching transactions: $e');
+      // Use logging framework instead of print
+      debugPrint('Network error fetching transactions: $e');
     }
   }
 
-  // Fungsi untuk filter transaksi berdasarkan search query dan selected filter
+  // Fungsi untuk meng-update filter transaksi ketika user mengetik
+  // di text field pencarian
   void _onSearchChanged() {
     _filterTransactions();
   }
 
+  // Fungsi untuk meng-update filter transaksi berdasarkan input user
   void _filterTransactions() {
     String query = _searchController.text.toLowerCase();
     setState(() {
-      _filteredTransactions = _allTransactions.where((transaction) {
-        final invoiceId = 'ID-${transaction.id.toString().padLeft(3, '0')}'.toLowerCase();
-        final status = transaction.status.toLowerCase();
+      _filteredTransactions =
+          _allTransactions.where((transaction) {
+            final invoiceId =
+                'ID-${transaction.id.toString().padLeft(3, '0')}'.toLowerCase();
+            final status = transaction.status.toLowerCase();
 
-        final matchesQuery = invoiceId.contains(query) || status.contains(query);
-        final matchesFilter = _selectedFilter == 'Semua' || status == _selectedFilter.toLowerCase().replaceAll(' ', ''); // Sesuaikan 'menunggu konfirmasi'
+            final matchesQuery =
+                invoiceId.contains(query) || status.contains(query);
+            final matchesFilter =
+                _selectedFilter == 'Semua' ||
+                status == _selectedFilter.toLowerCase().replaceAll(' ', '');
 
-        return matchesQuery && matchesFilter;
-      }).toList();
+            return matchesQuery && matchesFilter;
+          }).toList();
     });
   }
 
-  // Helper untuk mendapatkan warna status
+  // Fungsi untuk meng-return warna berdasarkan status transaksi
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
-      case 'menunggu konfirmasi': // Atau 'menunggu' jika itu yang Anda kirim
+      case 'menunggu konfirmasi':
         return Colors.orange;
       case 'dijemput':
         return Colors.blue;
@@ -148,13 +176,12 @@ class TransaksiPageState extends State<TransaksiPage> with WidgetsBindingObserve
         return Colors.purple;
       case 'selesai':
         return Colors.green;
-      // case 'dibatalkan':
-      //   return Colors.red;
       default:
         return Colors.grey;
     }
   }
 
+  // Build method untuk membuat UI
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -172,14 +199,27 @@ class TransaksiPageState extends State<TransaksiPage> with WidgetsBindingObserve
                 _filterTransactions();
               });
             },
-            itemBuilder: (context) => [
-              const PopupMenuItem(value: 'Semua', child: Text('Semua')),
-              const PopupMenuItem(value: 'Selesai', child: Text('Selesai')),
-              const PopupMenuItem(value: 'Menunggu Konfirmasi', child: Text('Menunggu Konfirmasi')), // Sesuaikan string status
-              const PopupMenuItem(value: 'Dijemput', child: Text('Dijemput')),
-              const PopupMenuItem(value: 'Diproses', child: Text('Diproses')),
-              const PopupMenuItem(value: 'Dibatalkan', child: Text('Dibatalkan')),
-            ],
+            itemBuilder:
+                (context) => [
+                  const PopupMenuItem(value: 'Semua', child: Text('Semua')),
+                  const PopupMenuItem(value: 'Selesai', child: Text('Selesai')),
+                  const PopupMenuItem(
+                    value: 'Menunggu Konfirmasi',
+                    child: Text('Menunggu Konfirmasi'),
+                  ),
+                  const PopupMenuItem(
+                    value: 'Dijemput',
+                    child: Text('Dijemput'),
+                  ),
+                  const PopupMenuItem(
+                    value: 'Diproses',
+                    child: Text('Diproses'),
+                  ),
+                  const PopupMenuItem(
+                    value: 'Dibatalkan',
+                    child: Text('Dibatalkan'),
+                  ),
+                ],
           ),
         ],
         backgroundColor: AppColors.primary,
@@ -206,63 +246,86 @@ class TransaksiPageState extends State<TransaksiPage> with WidgetsBindingObserve
             ),
           ),
           Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : _errorMessage != null
+            child:
+                _isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : _errorMessage != null
                     ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              _errorMessage!,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(color: Colors.red, fontSize: 16),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            _errorMessage!,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontSize: 16,
                             ),
-                            const SizedBox(height: 10),
-                            ElevatedButton(
-                              onPressed: _fetchTransactions,
-                              child: const Text('Coba Lagi'),
-                            ),
-                          ],
-                        ),
-                      )
+                          ),
+                          const SizedBox(height: 10),
+                          ElevatedButton(
+                            onPressed: _fetchTransactions,
+                            child: const Text('Coba Lagi'),
+                          ),
+                        ],
+                      ),
+                    )
                     : _filteredTransactions.isEmpty
-                        ? const Center(
-                            child: Text(
-                              'Tidak ada transaksi yang ditemukan.',
-                              style: TextStyle(fontSize: 16, color: Colors.grey),
-                            ),
-                          )
-                        : ListView.builder(
-                            itemCount: _filteredTransactions.length,
-                            itemBuilder: (context, index) {
-                              final transaction = _filteredTransactions[index];
-                              // Format tanggal
-                              final formattedDate = DateFormat('dd MMMM yyyy').format(transaction.createdAt);
+                    ? const Center(
+                      child: Text(
+                        'Tidak ada transaksi yang ditemukan.',
+                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                      ),
+                    )
+                    : RefreshIndicator(
+                      onRefresh: _fetchTransactions,
+                      child: ListView.builder(
+                        itemCount: _filteredTransactions.length,
+                        itemBuilder: (context, index) {
+                          final transaction = _filteredTransactions[index];
+                          final formattedDate = DateFormat(
+                            'dd MMMM yyyy',
+                          ).format(transaction.createdAt);
 
-                              return ListTile(
-                                title: Text('ID-${transaction.id.toString().padLeft(3, '0')}'),
-                                subtitle: Text(formattedDate),
-                                trailing: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      '+ ${transaction.getTotalPoints().toStringAsFixed(0)}', // Gunakan total poin
-                                      style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16, // Perbesar ukuran font
+                          return ListTile(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (_) => TransaksiDetailPage(
+                                        transactionId: transaction.id,
                                       ),
-                                    ),
-                                    Text(
-                                      transaction.status,
-                                      style: TextStyle(color: _getStatusColor(transaction.status)),
-                                    ),
-                                  ],
                                 ),
                               );
                             },
-                          ),
+                            title: Text(
+                              'ID-${transaction.id.toString().padLeft(3, '0')}',
+                            ),
+                            subtitle: Text(formattedDate),
+                            trailing: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  '+ ${transaction.getTotalPoints().toStringAsFixed(0)}',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                Text(
+                                  transaction.status,
+                                  style: TextStyle(
+                                    color: _getStatusColor(transaction.status),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
           ),
         ],
       ),

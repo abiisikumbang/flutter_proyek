@@ -86,9 +86,7 @@ class FlutterCbtTpaAppState extends State<FlutterCbtTpaApp> {
       child: MouseRegion( // Added MouseRegion for hover effect (will show cursor pointer on web/desktop)
         cursor: SystemMouseCursors.click,
         onHover: (event) {
-          // You could add more complex visual feedback on hover here if needed,
-          // like a subtle color change or scale animation, if not selected.
-          // For now, the cursor change is the main hover indicator.
+
         },
         child: Column(
           mainAxisSize: MainAxisSize.min, // Make column take minimum space

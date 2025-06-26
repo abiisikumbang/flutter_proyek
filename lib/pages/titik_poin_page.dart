@@ -27,15 +27,6 @@ class _TitikPoinPageState extends State<TitikPoinPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // Tombol back seperti di gambar pertama (panah kiri)
-        // leading: IconButton(
-        //   icon: const Icon(Icons.arrow_back),
-        //   color: Colors.white, // Warna ikon agar terlihat di app bar biru
-        //   onPressed: () {
-        //     Navigator.pop(context); // Kembali ke halaman sebelumnya
-        //   },
-        // ),
-        /// Warna background.
         backgroundColor: AppColors.primary,
         title: const Text(
           "BgJaki Point",

@@ -1,63 +1,81 @@
 // lib/models/sampah_item.dart
 
+// Tambahkan baseUrl ke path gambar jika belum URL penuh
+const String baseUrl =
+    'http://192.168.18.47:8000'; // Ganti dengan URL base Anda
+
 class SampahItemModel {
-  final String id;
-  final String title;
-  final String img; // Asumsi ini masih diperlukan untuk tampilan, tapi sumbernya mungkin dari luar tabel wastes
+  final int id;
+  final String name;
+  final String imageUrl;
+  final int points;
   final String satuan;
-  int quantity; // Quantity bisa diubah, jadi tidak perlu final
-  final int points; // point_value di database adalah int
+  int quantity;
 
   SampahItemModel({
     required this.id,
-    required this.img, // Tetap required jika memang selalu ada gambar
-    required this.title,
-    required this.satuan,
-    this.quantity = 1, // Default value saat membuat instance
+    required this.name,
+    required this.imageUrl,
     required this.points,
+    required this.satuan,
+    this.quantity = 1,
   });
 
   factory SampahItemModel.fromJson(Map<String, dynamic> json) {
-    // Pastikan 'id' di-konversi ke String karena di database adalah bigint
-    // Jika respons API mengembalikan int, maka .toString() diperlukan
-    final String idString = json['id'] != null ? json['id'].toString() : '';
 
-    // Pastikan 'name' adalah String
-    final String titleString = json['name'] as String? ?? 'Nama Sampah Tidak Diketahui';
-
-    // Perhatikan kolom 'img' - ini tidak ada di tabel wastes.
-    // Anda mungkin mendapatkan ini dari relasi lain, atau harus di-hardcode/default.
-    // Untuk saat ini, saya akan biarkan seperti ini, dengan fallback.
-    final String imgUrl = json['image_url'] as String? ?? 'assets/images/default_waste.png';
-
-    // Pastikan 'satuan' adalah String
-    final String satuanString = json['satuan'] as String? ?? 'unit'; // Sesuaikan dengan nama kolom 'satuan' di DB
-
-    // Pastikan 'point_value' di-konversi ke int
-    // Jika respons API mengembalikan double/string yang perlu di-parse, sesuaikan di sini.
-    final int pointsInt = json['point_value'] as int? ?? 0;
+     final imageUrl = json['image'];
+  final fullImageUrl = imageUrl.startsWith('http')
+      ? imageUrl
+      : '$baseUrl/storage/$imageUrl';
 
 
     return SampahItemModel(
-      id: idString,
-      title: titleString,
-      img: imgUrl,
-      satuan: satuanString,
-      points: pointsInt,
-      quantity: 1, // Default quantity saat item dimuat dari API
+      id: json['id'],
+      name: json['name'],
+      imageUrl: fullImageUrl,
+      satuan: json['satuan'],
+      points: json['point_value'],
+      quantity: 1,
     );
   }
 
-  // Jika Anda perlu mengonversi model ke JSON untuk dikirim kembali ke API,
-  // tambahkan metode toJson.
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'name': title, // Menggunakan 'name' agar sesuai dengan database
-      'image_url': img, // Asumsi nama kolom di API untuk gambar
+      'name': name,
+      'image': imageUrl,
       'satuan': satuan,
-      'point_value': points, // Menggunakan 'point_value' agar sesuai dengan database
-      'quantity': quantity,
+      'point_value': points,
     };
   }
+
+  SampahItemModel copyWith({
+    int? id,
+    String? name,
+    String? imageUrl,
+    int? points,
+    String? satuan,
+    int? quantity,
+  }) {
+    return SampahItemModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      imageUrl: imageUrl ?? this.imageUrl,
+      points: points ?? this.points,
+      satuan: satuan ?? this.satuan,
+      quantity: quantity ?? this.quantity,
+    );
+  }
+
+  static SampahItemModel empty() {
+    return SampahItemModel(
+      id: 0,
+      imageUrl: '',
+      name: '',
+      satuan: '',
+      quantity: 0,
+      points: 0,
+    );
+  }
 }
+

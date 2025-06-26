@@ -11,7 +11,7 @@ class AuthenticationController extends GetxController {
   RxInt totalPoints = 0.obs;
 
   // Ganti dengan alamat server
-  final String baseUrl = 'http://192.168.123.6:8000';
+  final String baseUrl = 'http://192.168.145.6:8000';
 
   @override
   void onInit() {
