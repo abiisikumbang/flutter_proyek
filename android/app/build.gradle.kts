@@ -6,9 +6,10 @@ plugins {
 }
 
 android {
+    ndkVersion = "29.0.13599879 rc2"
     namespace = "com.example.flutter_cbt_tpa_app"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    // ndkVersion = flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

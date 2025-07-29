@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../pages/titik_poin_page.dart';
 import '../pages/daftar_sampah_page.dart';
 import '../pages/sekolah_page.dart';
+import '../pages/redeem_page.dart';
 
 /// Widget untuk menampilkan menu utama
 class MainMenu extends StatelessWidget {
@@ -11,11 +12,12 @@ class MainMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> menuItems = [
-      {'icon': Icons.recycling, 'label': 'Daftar Sampah'},
-      {'icon': Icons.location_on, 'label': 'Titik Poin'},
-      {'icon': Icons.menu_book, 'label': 'Panduan'},
-      {'icon': Icons.school, 'label': 'Sekolah\nBebas Sampah'},
-      {'icon': Icons.apps, 'label': 'Program\nLainnya'},
+      {'icon': Icons.recycling, 'label': 'Daftar Sampah', 'color': Colors.green},
+      {'icon': Icons.location_on, 'label': 'Titik Poin', 'color': Colors.blue},
+      // {'icon': Icons.menu_book, 'label': 'Panduan', 'color': Colors.purple},
+      {'icon': Icons.school, 'label': 'Sekolah\nBebas Sampah', 'color': Colors.red},
+      {'icon': Icons.redeem, 'label': 'Redeem\nPoint', 'color': Colors.amber},
+      {'icon': Icons.apps, 'label': 'Program\nLainnya', 'color': Colors.teal},
     ];
 
     return SafeArea(
@@ -53,11 +55,13 @@ class MainMenu extends StatelessWidget {
                               builder: (context) => TitikPoinPage(),
                             ),
                           );
-                        // } else if (item['label'] == 'Panduan') {
-                        //   Navigator.push(
-                        //     context,
-                        //     MaterialPageRoute(builder: (context) => BantuanPage()),
-                        //   );
+                        } else if (item['label'] == 'Redeem\nPoint') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const RedeemPage(),
+                            ),
+                          );
                         } else if (item['label'] == 'Sekolah\nBebas Sampah') {
                           Navigator.push(
                             context,
@@ -68,10 +72,11 @@ class MainMenu extends StatelessWidget {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
+                                title: const Text("Program Lainnya"),
                                 content: const Text(
                                   "Fitur 'Program Lainnya' sedang dalam pengembangan. Nantikan pembaruan terbaru dari bangJAKI untuk pengalaman yang lebih menarik dan lengkap!",
                                   textAlign: TextAlign.center,
-                                ),
+                                ), 
                                 actions: <Widget>[
                                   TextButton(
                                     child: const Text("OK"),
@@ -99,12 +104,12 @@ class MainMenu extends StatelessWidget {
                               width: 64,
                               height: 64,
                               decoration: BoxDecoration(
-                                color: Colors.orange[100],
+                                color: item['color'],
                                 borderRadius: BorderRadius.circular(16),
                               ),
                               child: Icon(
                                 item['icon'],
-                                color: Colors.orange,
+                                color: Colors.white,
                                 size: 40,
                               ),
                             ),
@@ -132,3 +137,4 @@ class MainMenu extends StatelessWidget {
     );
   }
 }
+

@@ -1,73 +1,72 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_cbt_tpa_app/pages/home_content.dart';
-import 'package:flutter_cbt_tpa_app/pages/transaksi_page.dart';
-import 'package:flutter_cbt_tpa_app/pages/jual_sampah_page.dart';
-import 'package:flutter_cbt_tpa_app/pages/bantuan_page.dart';
-import 'package:flutter_cbt_tpa_app/pages/akun_page.dart';
+import 'package:flutter/material.dart'; // Importing Flutter Material package for UI widgets
+import 'package:flutter_cbt_tpa_app/pages/home_content.dart'; // Importing HomeContent page
+import 'package:flutter_cbt_tpa_app/pages/transaksi_page.dart'; // Importing TransaksiPage
+import 'package:flutter_cbt_tpa_app/pages/jual_sampah_page.dart'; // Importing JualSampahPage
+import 'package:flutter_cbt_tpa_app/pages/bantuan_page.dart'; // Importing BantuanPage
+import 'package:flutter_cbt_tpa_app/pages/akun_page.dart'; // Importing AkunPage
 
-
-class FlutterCbtTpaApp extends StatefulWidget {
-  const FlutterCbtTpaApp({super.key});
+class FlutterCbtTpaApp extends StatefulWidget { // Defining a stateful widget
+  const FlutterCbtTpaApp({super.key}); // Constructor for the widget
 
   @override
-  State<FlutterCbtTpaApp> createState() => FlutterCbtTpaAppState();
+  State<FlutterCbtTpaApp> createState() => FlutterCbtTpaAppState(); // Creating state for the widget
 }
 
-class FlutterCbtTpaAppState extends State<FlutterCbtTpaApp> {
-  int _selectedIndex = 0;
+class FlutterCbtTpaAppState extends State<FlutterCbtTpaApp> { // State class for FlutterCbtTpaApp
+  int _selectedIndex = 0; // Index of the currently selected bottom navigation item
 
-  final List<Widget> _pages = [
-    const HomeContent(),
-    const TransaksiPage(),
-    const JualSampahPage(),
-    const BantuanPage(),
-    const AkunPage(),
+  final List<Widget> _pages = [ // List of pages to navigate through
+    const HomeContent(), // HomeContent page
+    const TransaksiPage(), // TransaksiPage
+    const JualSampahPage(), // JualSampahPage
+    const BantuanPage(), // BantuanPage
+    const AkunPage(), // AkunPage
   ];
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
+  void _onItemTapped(int index) { // Function to handle item tap on bottom navigation
+    setState(() { // Update the state
+      _selectedIndex = index; // Change the selected index
     });
   }
 
   // --- Start: Custom Bottom Navigation Bar Implementation ---
-  Widget _buildCustomBottomNavigationBar() {
-    const backgroundColor = Color(0xFFFFFFFF); // Using white for a cleaner look, similar to the image
-    const selectedColor = Colors.orange; // Color for selected icon/text
-    const unselectedColor = Colors.grey; // Color for unselected icon/text
+  Widget _buildCustomBottomNavigationBar() { // Function to build a custom bottom navigation bar
+    const backgroundColor = Color(0xFFFFFFFF); // Background color for the navigation bar
+    const selectedColor = Colors.orange; // Color for selected item
+    const unselectedColor = Colors.grey; // Color for unselected items
 
-    // Define your original menu items with their icons and labels
+    // Define menu items with their icons and labels
     final List<Map<String, dynamic>> menuItems = [
-      {'icon': Icons.home, 'label': 'Beranda'},
-      {'icon': Icons.receipt_long, 'label': 'Transaksi'},
-      {'icon': Icons.sell, 'label': 'Jual'},
-      {'icon': Icons.help_outline, 'label': 'Bantuan'},
-      {'icon': Icons.person, 'label': 'Akun'},
+      {'icon': Icons.home, 'label': 'Beranda'}, // Home item
+      {'icon': Icons.receipt_long, 'label': 'Transaksi'}, // Transaksi item
+      {'icon': Icons.sell, 'label': 'Jual'}, // Jual item
+      {'icon': Icons.help_outline, 'label': 'Bantuan'}, // Bantuan item
+      {'icon': Icons.person, 'label': 'Akun'}, // Akun item
     ];
 
-    return Container(
-      decoration: const BoxDecoration(
-        color: backgroundColor, // Background color for the custom bar
-        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)), // Rounded top corners
-        boxShadow: [
+    return Container( // Creating a container for the navigation bar
+      decoration: const BoxDecoration( // Setting decoration for the container
+        color: backgroundColor, // Background color
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)), // Rounded corners on top
+        boxShadow: [ // Shadow properties
           BoxShadow(
-            color: Colors.black12, // Subtle shadow for depth
-            blurRadius: 10.0,
-            offset: Offset(0, -5), // Shadow offset upwards
+            color: Colors.black12, // Shadow color
+            blurRadius: 10.0, // Shadow blur radius
+            offset: Offset(0, -5), // Shadow offset
           ),
         ],
       ),
-      padding: const EdgeInsets.symmetric(vertical: 12.0), // Vertical padding inside the bar
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround, // Distribute items evenly
-        children: List.generate(menuItems.length, (index) {
-          final item = menuItems[index];
-          return _buildCustomNavItem(
-            index,
-            item['icon'] as IconData, // Cast to IconData
-            item['label'] as String, // Cast to String
-            selectedColor,
-            unselectedColor,
+      padding: const EdgeInsets.symmetric(vertical: 12.0), // Padding inside the container
+      child: Row( // Using a row to layout the items
+        mainAxisAlignment: MainAxisAlignment.spaceAround, // Space items evenly
+        children: List.generate(menuItems.length, (index) { // Generate a list of navigation items
+          final item = menuItems[index]; // Get the current menu item
+          return _buildCustomNavItem( // Build navigation item
+            index, // Index of the item
+            item['icon'] as IconData, // Icon for the item
+            item['label'] as String, // Label for the item
+            selectedColor, // Selected item color
+            unselectedColor, // Unselected item color
           );
         }),
       ),
@@ -76,35 +75,32 @@ class FlutterCbtTpaAppState extends State<FlutterCbtTpaApp> {
 
   // Helper method for building each custom navigation item
   Widget _buildCustomNavItem(int index, IconData iconData, String label, Color selectedColor, Color unselectedColor) {
-    final isSelected = _selectedIndex == index;
-    // Adjust size for selected icon
-    final double iconSize = isSelected ? 30.0 : 24.0;
-    final color = isSelected ? selectedColor : unselectedColor;
+    final isSelected = _selectedIndex == index; // Check if the item is selected
+    final double iconSize = isSelected ? 30.0 : 24.0; // Set icon size based on selection
+    final color = isSelected ? selectedColor : unselectedColor; // Set color based on selection
 
-    return GestureDetector(
-      onTap: () => _onItemTapped(index),
-      child: MouseRegion( // Added MouseRegion for hover effect (will show cursor pointer on web/desktop)
-        cursor: SystemMouseCursors.click,
-        onHover: (event) {
-
-        },
-        child: Column(
-          mainAxisSize: MainAxisSize.min, // Make column take minimum space
+    return GestureDetector( // Use GestureDetector for handling taps
+      onTap: () => _onItemTapped(index), // Handle tap event
+      child: MouseRegion( // MouseRegion for hover effects
+        cursor: SystemMouseCursors.click, // Change cursor to pointer
+        onHover: (event) {}, // Handle hover event
+        child: Column( // Use Column to stack icon and label
+          mainAxisSize: MainAxisSize.min, // Take minimum space
           children: [
-            Icon(iconData, color: color, size: iconSize), // Dynamic icon size
+            Icon(iconData, color: color, size: iconSize), // Display the icon
             const SizedBox(height: 4), // Space between icon and label
-            Text(
+            Text( // Display the label
               label,
-              style: TextStyle(color: color, fontSize: 12), // Label text style
+              style: TextStyle(color: color, fontSize: 12), // Style for the label
             ),
-            if (isSelected) // Show indicator line only if selected
+            if (isSelected) // Conditional rendering for selected item indicator
               Container(
-                margin: const EdgeInsets.only(top: 4), // Space above the indicator line
-                height: 2, // Height of the indicator line
-                width: 20, // Width of the indicator line
+                margin: const EdgeInsets.only(top: 4), // Margin above the indicator
+                height: 2, // Height of the indicator
+                width: 20, // Width of the indicator
                 decoration: BoxDecoration(
-                  color: selectedColor, // Color of the indicator line
-                  borderRadius: BorderRadius.circular(1), // Slightly rounded ends for the indicator
+                  color: selectedColor, // Indicator color
+                  borderRadius: BorderRadius.circular(1), // Rounded ends for the indicator
                 ),
               ),
           ],
@@ -115,14 +111,13 @@ class FlutterCbtTpaAppState extends State<FlutterCbtTpaApp> {
   // --- End: Custom Bottom Navigation Bar Implementation ---
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _pages,
+  Widget build(BuildContext context) { // Build method for the widget
+    return Scaffold( // Return a Scaffold widget
+      body: IndexedStack( // Use IndexedStack for body content
+        index: _selectedIndex, // Current selected index
+        children: _pages, // Pages to display in the stack
       ),
-      // Use the custom bottom navigation bar here
-      bottomNavigationBar: _buildCustomBottomNavigationBar(),
+      bottomNavigationBar: _buildCustomBottomNavigationBar(), // Custom bottom navigation bar
     );
   }
 }

@@ -38,8 +38,6 @@ class _JualSampahPageState extends State<JualSampahPage> {
   List<SampahItemModel> _currentCartItems =
       []; // Mengelola item keranjang di sini
 
-  final String baseUrl = "http://192.168.145.6:8000";
-
   @override
   void initState() {
     // Inisialisasi state
@@ -62,6 +60,8 @@ class _JualSampahPageState extends State<JualSampahPage> {
       _totalPointKeranjang = total; // Set total point keranjang
     });
   }
+
+  // Fungsi untuk menampilkan daftar sampah
 
   // Metode untuk menambah kuantitas item
   void _incrementQuantity(SampahItemModel item) {
@@ -159,7 +159,8 @@ class _JualSampahPageState extends State<JualSampahPage> {
     // Siapkan request body
     final Map<String, dynamic> requestBody = {
       "address": addressController.text,
-      "phone_number": phone_numberController.text,
+      // "phone_number": phone_numberController.text,
+      "phone": phone_numberController.text,
       "pickup_date": pickupDateController.text,
       "wastes": wastesData,
     };
@@ -188,6 +189,7 @@ class _JualSampahPageState extends State<JualSampahPage> {
           'Content-Type': 'application/json; charset=UTF-8',
           // Jika API Anda membutuhkan token autentikasi, tambahkan di sini:
           'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
         },
         body: jsonEncode(requestBody), // Encode body menjadi JSON string
       );
@@ -236,15 +238,32 @@ class _JualSampahPageState extends State<JualSampahPage> {
     return Scaffold(
       // Scaffold utama
       appBar: AppBar(
-        // AppBar halaman
-        backgroundColor: AppColors.primary, // Warna background AppBar
+        backgroundColor: AppColors.primary,
         title: const Text(
-          "Jual Sampah", // Judul AppBar
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ), // Style judul
+          "Jual Sampah",
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.shopping_cart, color: Colors.white),
+            onPressed: () async {
+              final updatedCart = await Navigator.push<List<SampahItemModel>>(
+                context,
+                MaterialPageRoute(
+                  builder:
+                      (context) =>
+                          DaftarSampahPage(initialCartItems: _currentCartItems),
+                ),
+              );
+              if (updatedCart != null) {
+                setState(() {
+                  _currentCartItems = List.from(updatedCart);
+                  _calculateTotalPoint();
+                });
+              }
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         // Scrollable body
@@ -544,7 +563,7 @@ class _JualSampahPageState extends State<JualSampahPage> {
                   ),
                   const SizedBox(height: 4), // Spasi
                   Text(
-                    item.points.toString(), // Point item (string)
+                    '${item.points.toString()} Point', // Point item (string)
                     style: TextStyle(
                       color: AppColors.primary,
                       fontWeight: FontWeight.bold,
@@ -552,13 +571,13 @@ class _JualSampahPageState extends State<JualSampahPage> {
                     ), // Style harga
                   ),
                   const SizedBox(height: 4), // Spasi
-                  const Text(
-                    "📌 Plastik", // Ini bisa menjadi properti di SampahItemModel jika bervariasi
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 13,
-                    ), // Style kategori
-                  ),
+                  // const Text(
+                  //   "📌 Plastik", // Ini bisa menjadi properti di SampahItemModel jika bervariasi
+                  //   style: TextStyle(
+                  //     color: Colors.grey,
+                  //     fontSize: 13,
+                  //   ), // Style kategori
+                  // ),
                   const SizedBox(height: 8), // Spasi
                   // Kontrol kuantitas
                   Container(
@@ -674,103 +693,3 @@ class _JualSampahPageState extends State<JualSampahPage> {
     );
   }
 }
-
-// import 'package:flutter/material.dart';
-// import '../models/sampah_item.dart';
-// import '../controller/transaction_controller.dart';
-// import '../services/api_service.dart';
-// import '../widgets/cart_item_tile.dart';
-// import '../widgets/empty_cart_box.dart';
-// import '../widgets/custom_text_field.dart';
-// import '../widgets/submit_button.dart';
-
-// class JualSampahPage extends StatefulWidget {
-//   final Map<SampahItemModel, int> keranjangAwal;
-//   final List<SampahItemModel> sampahList;
-//   final List<SampahItemModel> sampahTerpilih;
-//   const JualSampahPage({
-//     super.key,
-//     this.keranjangAwal = const {},
-//     this.sampahList = const [],
-//     this.sampahTerpilih = const [],
-//   });
-
-//   @override
-//   State<JualSampahPage> createState() => _JualSampahPageState();
-// }
-// class _JualSampahPageState extends State<JualSampahPage> {
-//   final List<SampahItemModel> keranjangAwal = [];
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     if (widget.keranjangAwal.isNotEmpty) {
-//       // If you want to initialize keranjangAwal from keranjangAwal's keys:
-//       keranjangAwal.addAll(widget.keranjangAwal.keys);
-//       // If you have a controller to assign keranjang, define and use it here.
-//       // Example: controller.keranjang.assignAll(widget.keranjangAwal);
-//     }
-//   }
-//   final TextEditingController _addressController = TextEditingController();
-//   final TextEditingController _dateController = TextEditingController();
-//   bool _isLoading = false;
-
-//   void _submitTransaction() async {
-//     if (keranjangAwal.isEmpty) return;
-//     setState(() => _isLoading = true);
-
-//     final body = {
-//       'pickup_address': _addressController.text,
-//       'pickup_date': _dateController.text,
-//       'items': keranjangAwal.map((e) => e.toJson()).toList(),
-//     };
-
-//     final response = await ApiService.postWithToken('/api/sell', body);
-//     setState(() => _isLoading = false);
-
-//     if (response.statusCode == 200) {
-//       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Berhasil dikirim')));
-//       setState(() => keranjangAwal.clear());
-//     } else {
-//       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Gagal mengirim data')));
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final total = TransactionController.calculateTotal(keranjangAwal);
-
-//     return Scaffold(
-//       appBar: AppBar(title: const Text('Jual Sampah')),
-//       body: Padding(
-//         padding: const EdgeInsets.all(12.0),
-//         child: Column(
-//           children: [
-//             CustomTextField(controller: _addressController, label: 'Alamat Penjemputan'),
-//             CustomTextField(controller: _dateController, label: 'Tanggal Penjemputan'),
-//             const SizedBox(height: 10),
-//             Expanded(
-//               child: keranjangAwal.isEmpty
-//                   ? const EmptyCartBox()
-//                   : ListView.builder(
-//                       itemCount: keranjangAwal.length,
-//                       itemBuilder: (context, index) {
-//                         final item = keranjangAwal[index];
-//                         return CartItemTile(
-//                           item: item,
-//                           onIncrement: () => setState(() => TransactionController.incrementQuantity(item)),
-//                           onDecrement: () => setState(() => TransactionController.decrementQuantity(item, keranjangAwal)),
-//                           onRemove: () => setState(() => keranjangAwal.remove(item)),
-//                         );
-//                       },
-//                     ),
-//             ),
-//             Text('Total Poin: $total'),
-//             const SizedBox(height: 10),
-//             SubmitButton(onPressed: _submitTransaction, isLoading: _isLoading)
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter_cbt_tpa_app/models/sampah_item.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,9 +10,6 @@ class AuthenticationController extends GetxController {
   var email = ''.obs;
   var phoneNumber = ''.obs;
   RxInt totalPoints = 0.obs;
-
-  // Ganti dengan alamat server
-  final String baseUrl = 'http://192.168.145.6:8000';
 
   @override
   void onInit() {

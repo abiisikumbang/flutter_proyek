@@ -38,141 +38,143 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Logo bangJaki
-              Image.asset(
-                'lib/images/logo_bangJAKI.png',
-                width: size * 0.500,
-                height: size * 0.500,
-              ),
-              const SizedBox(height: 30),
-              // Form email
-              InputWidget(
-                hintText: 'Email',
-                obscureText: false,
-                controller: _emailController,
-                textStyle: GoogleFonts.poppins(
-                  fontSize: size * 0.040,
-                  color: Colors.black,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Logo bangJaki
+                Image.asset(
+                  'lib/images/logo_bangJAKI.png',
+                  width: size * 0.500,
+                  height: size * 0.500,
                 ),
-              ),
-              const SizedBox(height: 20),
-              // Form password
-              InputWidget(
-                hintText: 'Password',
-                obscureText: _obscurePassword,
-                controller: _passwordController,
-                textStyle: GoogleFonts.poppins(
-                  fontSize: size * 0.040,
-                  color: Colors.black,
-                ),
-                // Tombol untuk mengatur apakah password ditampilkan atau disembunyikan
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                const SizedBox(height: 30),
+                // Form email
+                InputWidget(
+                  hintText: 'Email',
+                  obscureText: false,
+                  controller: _emailController,
+                  textStyle: GoogleFonts.poppins(
+                    fontSize: size * 0.040,
                     color: Colors.black,
                   ),
-                  onPressed: () {
-                    setState(() {
-                      _obscurePassword = !_obscurePassword;
-                    });
-                  },
                 ),
-              ),
-              const SizedBox(height: 30),
-              // Tombol login
-              Obx(
-                () => ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 50,
-                      vertical: 15,
+                const SizedBox(height: 20),
+                // Form password
+                InputWidget(
+                  hintText: 'Password',
+                  obscureText: _obscurePassword,
+                  controller: _passwordController,
+                  textStyle: GoogleFonts.poppins(
+                    fontSize: size * 0.040,
+                    color: Colors.black,
+                  ),
+                  // Tombol untuk mengatur apakah password ditampilkan atau disembunyikan
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                      color: Colors.black,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(height: 30),
+                // Tombol login
+                Obx(
+                  () => ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 50,
+                        vertical: 15,
+                      ),
+                    ),
+                    onPressed:
+                        widget.authController.isLoading.value
+                            ? null // tombol disable saat loading
+                            : () async {
+                              if (_emailController.text.isEmpty ||
+                                  _passwordController.text.isEmpty) {
+                                Get.snackbar(
+                                  "Error",
+                                  "Email dan Password wajib diisi",
+                                );
+                                return;
+                              }
+                              await widget.authController.login(
+                                email: _emailController.text.trim(),
+                                password: _passwordController.text.trim(),
+                              );
+                            },
+                    child:
+                        widget.authController.isLoading.value
+                            ? const CircularProgressIndicator(color: Colors.blue)
+                            : Text(
+                              'Login',
+                              style: GoogleFonts.poppins(
+                                fontSize: size * 0.040,
+                                color: Color.fromARGB(255, 248, 133, 9),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                  ),
+                ),
+                // ElevatedButton(
+                //   style: ElevatedButton.styleFrom(
+                //     backgroundColor: Colors.white,
+                //     elevation: 0,
+                //     padding: const EdgeInsets.symmetric(
+                //       horizontal: 50,
+                //       vertical: 15,
+                //     ),
+                //   ),
+                //   onPressed: () async {
+                //     if (_emailController.text.isEmpty ||
+                //         _passwordController.text.isEmpty) {
+                //       Get.snackbar("Error", "Email dan Password wajib diisi");
+                //       return;
+                //     }
+                //     // Proses autentikasi
+                //     await widget.authController.login(
+                //       email: _emailController.text.trim(),
+                //       password: _passwordController.text.trim(),
+                //     );
+                //   },
+                //   child: Obx(() {
+                //     // Jika sedang dalam proses autentikasi, maka tampilkan loading indicator
+                //     return widget.authController.isLoading.value
+                //         ? const CircularProgressIndicator(color: Colors.blue)
+                //         : Text(
+                //           'Login',
+                //           style: GoogleFonts.poppins(
+                //             fontSize: size * 0.040,
+                //             color: Color.fromARGB(255, 248, 133, 9),
+                //             fontWeight: FontWeight.bold,
+                //           ),
+                //         );
+                //   }),
+                // ),
+                // const SizedBox(height: 20),
+                // Tombol register
+                TextButton(
+                  onPressed: () {
+                    Get.to(() => RegisterPage());
+                  },
+                  child: Text(
+                    'Register',
+                    style: GoogleFonts.poppins(
+                      fontSize: size * 0.040,
+                      color: Colors.white,
                     ),
                   ),
-                  onPressed:
-                      widget.authController.isLoading.value
-                          ? null // tombol disable saat loading
-                          : () async {
-                            if (_emailController.text.isEmpty ||
-                                _passwordController.text.isEmpty) {
-                              Get.snackbar(
-                                "Error",
-                                "Email dan Password wajib diisi",
-                              );
-                              return;
-                            }
-                            await widget.authController.login(
-                              email: _emailController.text.trim(),
-                              password: _passwordController.text.trim(),
-                            );
-                          },
-                  child:
-                      widget.authController.isLoading.value
-                          ? const CircularProgressIndicator(color: Colors.blue)
-                          : Text(
-                            'Login',
-                            style: GoogleFonts.poppins(
-                              fontSize: size * 0.040,
-                              color: Color.fromARGB(255, 248, 133, 9),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
                 ),
-              ),
-              // ElevatedButton(
-              //   style: ElevatedButton.styleFrom(
-              //     backgroundColor: Colors.white,
-              //     elevation: 0,
-              //     padding: const EdgeInsets.symmetric(
-              //       horizontal: 50,
-              //       vertical: 15,
-              //     ),
-              //   ),
-              //   onPressed: () async {
-              //     if (_emailController.text.isEmpty ||
-              //         _passwordController.text.isEmpty) {
-              //       Get.snackbar("Error", "Email dan Password wajib diisi");
-              //       return;
-              //     }
-              //     // Proses autentikasi
-              //     await widget.authController.login(
-              //       email: _emailController.text.trim(),
-              //       password: _passwordController.text.trim(),
-              //     );
-              //   },
-              //   child: Obx(() {
-              //     // Jika sedang dalam proses autentikasi, maka tampilkan loading indicator
-              //     return widget.authController.isLoading.value
-              //         ? const CircularProgressIndicator(color: Colors.blue)
-              //         : Text(
-              //           'Login',
-              //           style: GoogleFonts.poppins(
-              //             fontSize: size * 0.040,
-              //             color: Color.fromARGB(255, 248, 133, 9),
-              //             fontWeight: FontWeight.bold,
-              //           ),
-              //         );
-              //   }),
-              // ),
-              // const SizedBox(height: 20),
-              // Tombol register
-              TextButton(
-                onPressed: () {
-                  Get.to(() => RegisterPage());
-                },
-                child: Text(
-                  'Register',
-                  style: GoogleFonts.poppins(
-                    fontSize: size * 0.040,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

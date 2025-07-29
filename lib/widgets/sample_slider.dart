@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_cbt_tpa_app/material.dart';
-import 'package:flutter_cbt_tpa_app/models/sampah_item.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../models/sampah_item.dart'; // Pastikan path ini sesuai dengan struktur foldermu
 
 class SampleSlider extends StatefulWidget {
   const SampleSlider({super.key});
@@ -14,46 +16,72 @@ class SampleSlider extends StatefulWidget {
 class _SampleSliderState extends State<SampleSlider> {
   List<SampahItemModel> samples = [];
   bool isLoading = true;
+  String errorMessage = '';
 
   @override
   void initState() {
     super.initState();
-    fetchSamples();
+    _fetchSampleItems();
   }
 
-  Future<void> fetchSamples() async {
+  Future<void> _fetchSampleItems() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    if (token == null || token.isEmpty) {
+      setState(() {
+        isLoading = false;
+        errorMessage = 'Token tidak ditemukan. Silakan login ulang.';
+      });
+      return;
+    }
+
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.145.6:8000/api/wastes'), // Ganti sesuai IP
+        Uri.parse('$baseUrl/api/wastes'),
         headers: {
           'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
         },
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body)['data'];
-        final List<SampahItemModel> items = data.map((json) {
-          return SampahItemModel(
-            id: json['id'],
-            name: json['name'],
-            imageUrl: json['image'] ?? '',
-            points: json['point_value'],
-            satuan: json['satuan'],
-          );
-        }).toList();
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+        final List<dynamic> wasteList = responseData['data'];
+        // print("🔥 Jumlah data dari API: ${wasteList.length}");
+        // print("🔥 Contoh item pertama: ${wasteList.first}");
+
+        final sampleItems =
+            wasteList
+                .map((json) {
+                  try {
+                    return SampahItemModel.fromJson(json);
+                  } catch (e) {
+                    // print("⚠️ Gagal parsing item: $json \nError: $e");
+                    return null;
+                  }
+                })
+                .where((e) => e != null)
+                .cast<SampahItemModel>()
+                .take(3)
+                .toList();
+
+        // print("✅ Sample items ditemukan: ${sampleItems.length}");
 
         setState(() {
-          samples = items.take(3).toList(); // Ambil 3 data saja
+          samples = sampleItems;
           isLoading = false;
         });
       } else {
-        throw Exception("Failed to load data");
+        setState(() {
+          isLoading = false;
+          errorMessage = 'Gagal mengambil data. Status: ${response.statusCode}';
+        });
       }
-    } catch (e, stackTrace) {
-      // Use Flutter's logging framework
-      debugPrint("Error fetching samples: $e\n$stackTrace");
+    } catch (e) {
       setState(() {
-      isLoading = false;
+        isLoading = false;
+        errorMessage = 'Terjadi kesalahan: $e';
       });
     }
   }
@@ -61,10 +89,15 @@ class _SampleSliderState extends State<SampleSlider> {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return const SizedBox(
-        height: 100,
-        child: Center(child: CircularProgressIndicator()),
-      );
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (errorMessage.isNotEmpty) {
+      return Center(child: Text(errorMessage));
+    }
+
+    if (samples.isEmpty) {
+      return const Center(child: Text("Tidak ada sampah ditemukan."));
     }
 
     return SizedBox(
@@ -85,24 +118,31 @@ class _SampleSliderState extends State<SampleSlider> {
             ),
             child: Column(
               children: [
+                // Tampilkan gambar jika ada
                 item.imageUrl.isNotEmpty
                     ? Image.network(
-                        item.imageUrl,
-                        width: 64,
-                        height: 64,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Icon(Icons.broken_image, size: 32, color: Colors.grey);
-                        },
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return const SizedBox(
-                            width: 32,
-                            height: 32,
-                            child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
-                          );
-                        },
-                      )
+                      item.imageUrl,
+                      width: 64,
+                      height: 64,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Icon(
+                          Icons.broken_image,
+                          size: 32,
+                          color: Colors.grey,
+                        );
+                      },
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return const SizedBox(
+                          width: 32,
+                          height: 32,
+                          child: Center(
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        );
+                      },
+                    )
                     : const Icon(Icons.image, size: 32, color: Colors.grey),
                 const SizedBox(height: 5),
                 Text(

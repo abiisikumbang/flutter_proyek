@@ -15,7 +15,8 @@ class HomeContent extends StatefulWidget {
 }
 
 class _HomeContentState extends State<HomeContent> {
-  final AuthenticationController authenticationController = Get.find<AuthenticationController>();
+  final AuthenticationController authenticationController =
+      Get.find<AuthenticationController>();
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -31,7 +32,10 @@ class _HomeContentState extends State<HomeContent> {
   }
 
   void _onScroll() {
-    if (_scrollController.offset > 0 && _scrollController.offset < 50 && _scrollController.position.userScrollDirection == ScrollDirection.forward) {
+    if (_scrollController.offset > 0 &&
+        _scrollController.offset < 50 &&
+        _scrollController.position.userScrollDirection ==
+            ScrollDirection.forward) {
       setState(() {});
       _scrollController.jumpTo(0);
       _refresh();
@@ -96,13 +100,6 @@ class _HomeContentState extends State<HomeContent> {
                             style: AppTextStyle.balance,
                           ),
                         ),
-                        // IconButton(
-                        //   icon: const Icon(Icons.refresh, size: 20),
-                        //   tooltip: 'Refresh Point',
-                        //   onPressed: () async {
-                        //     await authenticationController.getUser();
-                        //   },
-                        // ),
                       ],
                     ),
                   ],
@@ -111,7 +108,6 @@ class _HomeContentState extends State<HomeContent> {
 
               const SizedBox(height: 10),
               const MainMenu(),
-
               const SizedBox(height: 20),
 
               // Judul dan lihat semua
@@ -143,8 +139,11 @@ class _HomeContentState extends State<HomeContent> {
                 ],
               ),
 
+              // Jarak antara judul dan slider
               const SizedBox(height: 20),
+              // Slider sampah
               const SampleSlider(),
+              // Jarak antara slider dan footer
               const SizedBox(height: 16),
             ],
           ),
@@ -153,4 +152,3 @@ class _HomeContentState extends State<HomeContent> {
     );
   }
 }
-

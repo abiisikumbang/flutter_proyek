@@ -1,8 +1,7 @@
 // lib/models/sampah_item.dart
 
-// Tambahkan baseUrl ke path gambar jika belum URL penuh
-const String baseUrl =
-    'http://192.168.18.47:8000'; // Ganti dengan URL base Anda
+final String baseUrl =
+    'http://10.221.156.6:8000';
 
 class SampahItemModel {
   final int id;

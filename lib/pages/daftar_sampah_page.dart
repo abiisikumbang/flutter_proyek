@@ -10,7 +10,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// Halaman untuk menampilkan daftar jenis sampah yang tersedia untuk dijual.
 class DaftarSampahPage extends StatefulWidget {
   // Kelas StatefulWidget DaftarSampahPage
-  final List<SampahItemModel>? initialCartItems; // Daftar awal item di keranjang
+  final List<SampahItemModel>?
+  initialCartItems; // Daftar awal item di keranjang
   const DaftarSampahPage({super.key, this.initialCartItems}); // Konstruktor
 
   @override
@@ -26,7 +27,6 @@ class _DaftarSampahPageState extends State<DaftarSampahPage> {
   String _errorMessage = ''; // Pesan kesalahan
 
   // Pastikan baseUrl ini sesuai dengan IP Laravel Anda, terutama jika menggunakan Flutter Web
-  final String baseUrl = "http://192.168.145.6:8000"; // URL dasar API
 
   @override
   void initState() {
@@ -133,11 +133,11 @@ class _DaftarSampahPageState extends State<DaftarSampahPage> {
         // Tambahkan item ke keranjang menggunakan copyWith
         _cartItems.add(item.copyWith(quantity: 1));
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('${item.name} ditambahkan ke keranjang.'),
-        ), // Tampilkan snackbar
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text('${item.name} ditambahkan ke keranjang.'),
+      //   ), // Tampilkan snackbar
+      // );
     });
   }
 
@@ -244,12 +244,15 @@ class _DaftarSampahPageState extends State<DaftarSampahPage> {
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
+                                // Tombol kurang untuk mengurangi jumlah item
                                 IconButton(
                                   icon: const Icon(
                                     Icons.remove_circle,
                                     color: Colors.red,
                                   ),
                                   onPressed: () {
+                                    // Kurangi jumlah item jika lebih dari 1
+                                    // Jika tidak, maka hapus item dari cart
                                     modalSetState(() {
                                       if (item.quantity > 1) {
                                         item.quantity--;
@@ -260,18 +263,21 @@ class _DaftarSampahPageState extends State<DaftarSampahPage> {
                                     });
                                   },
                                 ),
+                                // Tampilkan jumlah item
                                 Text(
                                   item.quantity.toString(),
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
+                                // Tombol tambah untuk menambah jumlah item
                                 IconButton(
                                   icon: const Icon(
                                     Icons.add_circle,
                                     color: Colors.green,
                                   ),
                                   onPressed: () {
+                                    // Tambah jumlah item
                                     modalSetState(() {
                                       item.quantity++;
                                       setState(() {});
@@ -362,12 +368,12 @@ class _DaftarSampahPageState extends State<DaftarSampahPage> {
           "Daftar Sampah",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.shopping_cart),
-            onPressed: _viewCart,
-          ),
-        ],
+        // actions: [
+        //   IconButton(
+        //     icon: const Icon(Icons.shopping_cart),
+        //     onPressed: _viewCart,
+        //   ),
+        // ],
       ),
       body:
           _isLoading
@@ -392,7 +398,6 @@ class _DaftarSampahPageState extends State<DaftarSampahPage> {
                       orElse: () => SampahItemModel.empty(),
                     );
                     final quantity = inCart.quantity;
-                    // print('Image URL: ${item.imageUrl}');
                     return Card(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -460,9 +465,12 @@ class _DaftarSampahPageState extends State<DaftarSampahPage> {
                               style: TextStyle(fontStyle: FontStyle.italic),
                             ),
                             const SizedBox(height: 10),
+                            // Membuat row yang berisi 3 buah icon button
+                            // yaitu tombol kurang, jumlah, dan tombol tambah
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
+                                // Tombol untuk mengurangi jumlah item
                                 IconButton(
                                   icon: const Icon(
                                     Icons.remove_circle_outline,
@@ -471,6 +479,7 @@ class _DaftarSampahPageState extends State<DaftarSampahPage> {
                                   onPressed:
                                       quantity > 0
                                           ? () {
+                                            // Membuat state untuk mengurangi jumlah item
                                             setState(() {
                                               final index = _cartItems
                                                   .indexWhere(
@@ -479,8 +488,10 @@ class _DaftarSampahPageState extends State<DaftarSampahPage> {
                                               if (index != -1) {
                                                 if (_cartItems[index].quantity >
                                                     1) {
+                                                  // Mengurangi jumlah item
                                                   _cartItems[index].quantity--;
                                                 } else {
+                                                  // Menghapus item dari list
                                                   _cartItems.removeAt(index);
                                                 }
                                               }
@@ -488,12 +499,14 @@ class _DaftarSampahPageState extends State<DaftarSampahPage> {
                                           }
                                           : null,
                                 ),
+                                // Membuat text untuk menampilkan jumlah item
                                 Text(
                                   quantity.toString(),
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
+                                // Tombol untuk menambah jumlah item
                                 IconButton(
                                   icon: const Icon(
                                     Icons.add_circle_outline,
@@ -515,11 +528,10 @@ class _DaftarSampahPageState extends State<DaftarSampahPage> {
               ? FloatingActionButton.extended(
                 onPressed: _viewCart,
                 icon: const Icon(Icons.shopping_cart_checkout),
-                label: const Text("Keranjang"),
+                label: Text('Keranjang (${_cartItems.length})'),
                 backgroundColor: AppColors.primary,
               )
               : null,
     );
   }
 }
-

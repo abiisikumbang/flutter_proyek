@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
       title: 'BangJaki',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.deepPurple,
+          seedColor: const Color.fromARGB(255, 184, 162, 222),
         ), // 🔧 Set tema aplikasi
       ),
       initialRoute: '/login', // 🔧 Routing awal ke halaman login
@@ -34,12 +34,7 @@ class MyApp extends StatelessWidget {
       ],
     );
   }
-  /// Mengecek apakah pengguna sudah login atau belum.
-  ///
-  /// Jika ada token di SharedPreferences, maka akan dialihkan ke halaman utama.
-  /// Jika tidak, maka akan dialihkan ke halaman login.
-  ///
-  /// Fungsi ini digunakan untuk menentukan halaman awal aplikasi.
+
   Future<void> checkLoginStatus() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');

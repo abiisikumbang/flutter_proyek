@@ -12,13 +12,12 @@ class AppColors {
   static const textDark = Color(0xFF333333);
   // Warna putih
   static const white = Colors.white;
-
   // Warna utama dengan transparansi
   static var primaryLight = primary;
 }
 
 // Class untuk menyimpan gaya teks aplikasi
-class AppTextStyle {
+class AppTextStyle {  
   // Gaya teks untuk salam
   static const greeting = TextStyle(fontSize: 18, fontWeight: FontWeight.w600);
   // Gaya teks untuk saldo
@@ -27,3 +26,24 @@ class AppTextStyle {
   static const menuLabel = TextStyle(fontSize: 12);
 }
 
+// Class untuk menyimpan warna status yang digunakan dalam aplikasi
+class ColorStatus {
+  static Color getColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'menunggu konfirmasi':
+        return Colors.amber[600]!;
+      case 'dijemput':
+        return Colors.lightBlue[600]!;
+      case 'diantar':
+        return Colors.lightBlue[600]!;
+      case 'diproses':
+        return Colors.teal[400]!;
+      case 'selesai':
+        return Colors.green[600]!;
+      case 'batal':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
+}

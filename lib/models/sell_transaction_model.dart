@@ -38,7 +38,8 @@ class SellTransactionModel {
       id: json['id'] as int,
       userId: json['user_id'] as int,
       address: json['address'] as String,
-      phoneNumber: json['phone_number'] as String,
+      // phoneNumber: json['phone_number'] as String,
+      phoneNumber: json['phone'] as String, // Perbaiki sesuai dengan perubahan di API
       pickupDate: DateTime.parse(json['pickup_date'] as String), // YYYY-MM-DD
       status: json['status'] as String,
       createdAt: DateTime.parse(json['created_at'] as String), // ISO 8601
